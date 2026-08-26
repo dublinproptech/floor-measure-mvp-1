@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../core/auth.dart';
+import '../../core/theme.dart';
+import 'auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -13,72 +12,111 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
-  String? _error;
-  bool _busy = false;
+  String? _localError;
 
-  Future<void> _signIn() async {
-    if (_email.text.trim().isEmpty || _password.text.isEmpty) {
-      setState(() => _error = 'Enter an email and password');
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final email = _email.text.trim();
+    final pw = _password.text;
+    if (email.isEmpty || pw.isEmpty) {
+      setState(() => _localError = 'Enter an email and password');
       return;
     }
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      await ref
-          .read(firebaseAuthProvider)
-          .signInWithEmailAndPassword(
-            email: _email.text.trim(),
-            password: _password.text,
-          );
-    } on FirebaseAuthException catch (e) {
-      setState(() => _error = e.message);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    setState(() => _localError = null);
+    ref.read(authControllerProvider.notifier).signIn(email, pw);
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(authControllerProvider);
+    final busy = state.isLoading;
+    final errorText = _localError ??
+        (state.hasError ? state.error.toString() : null);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Floor Measure')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _email,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _password,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            if (_error != null)
-              Text(
-                _error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(kRadius),
+                border: Border.all(color: AppColors.line),
               ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: _busy ? null : _signIn,
-              child: _busy
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Sign in'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text('Dublin PropTech',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800,
+                          color: AppColors.ink)),
+                  const SizedBox(height: 4),
+                  const Text('Floor Survey',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: AppColors.muted)),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 20),
+                    height: 3, width: 44,
+                    decoration: BoxDecoration(color: AppColors.gold,
+                        borderRadius: BorderRadius.circular(2)),
+                  ),
+                  _label('Email'),
+                  TextField(
+                    controller: _email,
+                    enabled: !busy,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                        hintText: 'you@dublinproptech.com'),
+                  ),
+                  const SizedBox(height: 14),
+                  _label('Password'),
+                  TextField(
+                    controller: _password,
+                    enabled: !busy,
+                    obscureText: true,
+                    onSubmitted: (_) => _submit(),
+                    decoration: const InputDecoration(hintText: '••••••••'),
+                  ),
+                  if (errorText != null) ...[
+                    const SizedBox(height: 14),
+                    Text(errorText,
+                        style: const TextStyle(
+                            color: AppColors.danger, fontSize: 13)),
+                  ],
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: busy ? null : _submit,
+                    child: busy
+                        ? const SizedBox(height: 20, width: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                        : const Text('Sign in'),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(text,
+        style: const TextStyle(
+            fontSize: 12.5, fontWeight: FontWeight.w700,
+            color: AppColors.label)),
+  );
 }

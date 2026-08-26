@@ -1,3 +1,4 @@
+import 'package:floor_measure/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,10 +19,7 @@ class FloorMeasureApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'Floor Measure',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF1D9E75),
-      ),
+      theme: buildAppTheme(),
       routerConfig: ref.watch(routerProvider),
     );
   }
