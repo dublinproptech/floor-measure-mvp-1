@@ -8,6 +8,7 @@ import '../features/projects/presentation/project_list_screen.dart';
 import '../features/projects/presentation/project_form_screen.dart';
 import '../features/projects/presentation/project_detail_screen.dart';
 import '../features/projects/data/project_model.dart';
+import '../features/admin/presentation/admin_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -32,6 +33,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
+      GoRoute(path: '/admin', builder: (_, _) => const AdminScreen()), //del
       GoRoute(path: '/projects', builder: (_, _) => const ProjectListScreen()),
       GoRoute(path: '/projects/new', builder: (_, _) => const ProjectFormScreen()),
       GoRoute(
