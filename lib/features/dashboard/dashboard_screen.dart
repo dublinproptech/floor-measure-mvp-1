@@ -39,10 +39,9 @@ class DashboardScreen extends ConsumerWidget {
         title: const Text('Sign out?'),
         content: const Text('You will need to sign in again to continue.'),
         actions: [
-
-          FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Sign out')),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Sign out')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('Cancel')),
