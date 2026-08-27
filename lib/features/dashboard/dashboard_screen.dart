@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../auth/auth_controller.dart';
 
 import '../../core/auth.dart';
@@ -23,7 +24,10 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
       body: Center(
-        child: Text('Signed in as ${user?.email ?? "?"} · role: $currentRole'),
+        child: FilledButton(
+          onPressed: () => context.push('/projects'),
+          child: const Text('Projects'),
+        ),
       ),
     );
   }

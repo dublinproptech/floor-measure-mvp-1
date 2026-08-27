@@ -4,6 +4,10 @@ import 'auth.dart';
 import '../features/auth/splash_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
+import '../features/projects/presentation/project_list_screen.dart';
+import '../features/projects/presentation/project_form_screen.dart';
+import '../features/projects/presentation/project_detail_screen.dart';
+import '../features/projects/data/project_model.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -28,6 +32,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
+      GoRoute(path: '/projects', builder: (_, _) => const ProjectListScreen()),
+      GoRoute(path: '/projects/new', builder: (_, _) => const ProjectFormScreen()),
+      GoRoute(
+        path: '/projects/:id',
+        builder: (context, state) =>
+            ProjectDetailScreen(projectId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/projects/:id/edit',
+        builder: (context, state) =>
+            ProjectFormScreen(existing: state.extra as ProjectModel?),
+      ),
     ],
   );
 });
