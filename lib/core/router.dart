@@ -9,6 +9,10 @@ import '../features/projects/presentation/project_form_screen.dart';
 import '../features/projects/presentation/project_detail_screen.dart';
 import '../features/projects/data/project_model.dart';
 import '../features/admin/presentation/admin_screen.dart';
+import '../features/rooms/presentation/room_list_screen.dart';
+import '../features/rooms/presentation/room_form_screen.dart';
+import '../features/rooms/data/room_model.dart';
+
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -45,6 +49,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/projects/:id/edit',
         builder: (context, state) =>
             ProjectFormScreen(existing: state.extra as ProjectModel?),
+      ),
+      GoRoute(
+        path: '/projects/:id/rooms',
+        builder: (context, state) =>
+            RoomListScreen(projectId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/projects/:id/rooms/new',
+        builder: (context, state) =>
+            RoomFormScreen(projectId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/projects/:id/rooms/:roomId/edit',
+        builder: (context, state) => RoomFormScreen(
+          projectId: state.pathParameters['id']!,
+          existing: state.extra as RoomModel?,
+        ),
       ),
     ],
   );

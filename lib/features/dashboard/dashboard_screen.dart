@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../auth/auth_controller.dart';
 
-import '../../core/auth.dart';
+// import '../../core/auth.dart';
 
 const currentRole = 'surveyor';
 
@@ -12,7 +12,7 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider).asData?.value;
+    // final user = ref.watch(authStateProvider).asData?.value;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
