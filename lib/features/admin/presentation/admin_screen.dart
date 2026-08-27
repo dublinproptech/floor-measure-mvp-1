@@ -64,7 +64,7 @@ class _FlooringTypesTab extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 88),
             itemCount: types.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, i) => _FlooringTypeTile(type: types[i]),
           );
         },
@@ -292,7 +292,7 @@ class _UsersTab extends ConsumerWidget {
         if (users.isEmpty) return const Center(child: Text('No users yet.'));
         return ListView.separated(
           itemCount: users.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, i) {
             final user = users[i];
             return ListTile(

@@ -64,8 +64,8 @@ class ProjectDetailScreen extends ConsumerWidget {
                   '${p.surveyDate.day}/${p.surveyDate.month}/${p.surveyDate.year}'),
               if (p.notes.isNotEmpty) _row('Notes', p.notes),
               const Divider(height: 32),
-              _navCard(context, Icons.straighten, 'Rooms & measurements'),
-              _navCard(context, Icons.report_problem_outlined, 'Snaglist'),
+              _navCard(context, Icons.straighten, 'Rooms & measurements', onTap: () => context.push('/projects/$projectId/rooms')),
+              _navCard(context, Icons.report_problem_outlined, 'Snaglist', onTap: null),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () => _confirmDelete(context, ref),
@@ -97,7 +97,7 @@ class ProjectDetailScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _navCard(BuildContext context, IconData icon, String label) => Card(
+  Widget _navCard(BuildContext context, IconData icon, String label, {VoidCallback? onTap}) => Card(
     margin: const EdgeInsets.only(bottom: 10),
     elevation: 0,
     shape: RoundedRectangleBorder(
@@ -108,8 +108,9 @@ class ProjectDetailScreen extends ConsumerWidget {
       leading: Icon(icon, color: AppColors.gold),
       title: Text(label),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Coming in the next feature'))),
+      onTap: onTap ??
+              () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Coming in the next feature'))),
     ),
   );
 
