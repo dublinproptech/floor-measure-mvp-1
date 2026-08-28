@@ -65,7 +65,7 @@ class ProjectDetailScreen extends ConsumerWidget {
               if (p.notes.isNotEmpty) _row('Notes', p.notes),
               const Divider(height: 32),
               _navCard(context, Icons.straighten, 'Rooms & measurements', onTap: () => context.push('/projects/$projectId/rooms')),
-              _navCard(context, Icons.report_problem_outlined, 'Snaglist', onTap: null),
+              _navCard(context, Icons.report_problem_outlined, 'Snaglist', onTap: () => context.push('/projects/$projectId/snags')),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () => _confirmDelete(context, ref),
