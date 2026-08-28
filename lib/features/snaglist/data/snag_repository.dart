@@ -11,6 +11,8 @@ abstract class SnagRepository {
 
   /// Generates the next sequential ref, e.g. "SNAG-001", "SNAG-002".
   Future<String> nextRef(String projectId);
+  /// All snags across every project — used only by the Dashboard for counts.
+  Stream<List<SnagModel>> watchAllSnags();
 }
 
 class FirestoreSnagRepository implements SnagRepository {
@@ -61,5 +63,12 @@ class FirestoreSnagRepository implements SnagRepository {
     final snap = await _collection(projectId).count().get();
     final next = (snap.count ?? 0) + 1;
     return 'SNAG-${next.toString().padLeft(3, '0')}';
+  }
+
+  @override
+  Stream<List<SnagModel>> watchAllSnags() {
+    return _firestore.collectionGroup('snags').snapshots().map(
+          (snap) => snap.docs.map(SnagModel.fromFirestore).toList(),
+        );
   }
 }

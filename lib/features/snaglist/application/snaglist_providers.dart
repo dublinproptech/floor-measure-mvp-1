@@ -22,6 +22,10 @@ final snagsProvider = StreamProvider.family<List<SnagModel>, String>((ref, proje
   return ref.watch(snagRepositoryProvider).watchSnags(projectId);
 });
 
+final allSnagsProvider = StreamProvider<List<SnagModel>>((ref) {
+  return ref.watch(snagRepositoryProvider).watchAllSnags();
+});
+
 /// Open + In Progress snags for a project (derived, no extra query).
 final openSnagsProvider = Provider.family<AsyncValue<List<SnagModel>>, String>((ref, projectId) {
   final snags = ref.watch(snagsProvider(projectId));
