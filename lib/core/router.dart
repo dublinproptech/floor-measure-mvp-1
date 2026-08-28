@@ -12,6 +12,7 @@ import '../features/admin/presentation/admin_screen.dart';
 import '../features/rooms/presentation/room_list_screen.dart';
 import '../features/rooms/presentation/room_form_screen.dart';
 import '../features/rooms/data/room_model.dart';
+import '../features/snaglist/presentation/snag_list_screen.dart';
 
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -67,6 +68,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           existing: state.extra as RoomModel?,
         ),
       ),
+      GoRoute(
+        path: '/projects/:id/snags',
+        builder: (context, state) =>
+            SnagListScreen(projectId: state.pathParameters['id']!),
+      ), //Snaglist
     ],
   );
 });
