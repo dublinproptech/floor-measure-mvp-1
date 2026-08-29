@@ -6,6 +6,7 @@ import '../data/project_model.dart';
 import '../application/project_controllers.dart';
 import '../../files/presentation/attachments_section.dart';
 import '../../files/data/attachment_model.dart';
+import '../../reports/application/report_controllers.dart';
 
 class ProjectDetailScreen extends ConsumerWidget {
   final String projectId;
@@ -75,6 +76,30 @@ class ProjectDetailScreen extends ConsumerWidget {
                 title: 'Site photos',
               ),
               const SizedBox(height: 16),
+              Consumer(
+                builder: (context, ref, _) {
+                  final busy = ref.watch(reportControllerProvider).isLoading;
+                  return FilledButton.icon(
+                    onPressed: busy
+                        ? null
+                        : () async {
+                      final ok = await ref
+                          .read(reportControllerProvider.notifier)
+                          .generateAndShare(p);
+                      if (!ok && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Could not generate the report.')));
+                      }
+                    },
+                    icon: busy
+                        ? const SizedBox(height: 18, width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.picture_as_pdf),
+                    label: Text(busy ? 'Generating...' : 'Generate report'),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
               TextButton.icon(
                 onPressed: () => _confirmDelete(context, ref),
                 icon: const Icon(Icons.delete_outline, color: AppColors.danger),
