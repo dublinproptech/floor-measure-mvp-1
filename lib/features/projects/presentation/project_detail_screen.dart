@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme.dart';
 import '../data/project_model.dart';
 import '../application/project_controllers.dart';
+import '../../files/presentation/attachments_section.dart';
+import '../../files/data/attachment_model.dart';
 
 class ProjectDetailScreen extends ConsumerWidget {
   final String projectId;
@@ -66,6 +68,12 @@ class ProjectDetailScreen extends ConsumerWidget {
               const Divider(height: 32),
               _navCard(context, Icons.straighten, 'Rooms & measurements', onTap: () => context.push('/projects/$projectId/rooms')),
               _navCard(context, Icons.report_problem_outlined, 'Snaglist', onTap: () => context.push('/projects/$projectId/snags')),
+              const Divider(height: 32),
+              AttachmentsSection(
+                projectId: projectId,
+                type: AttachmentType.siteDoc,
+                title: 'Site photos',
+              ),
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: () => _confirmDelete(context, ref),
