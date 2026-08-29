@@ -40,6 +40,7 @@ dependencies:
   firebase_auth: ^6.5.7
   equatable: ^2.1.0
   cloud_firestore: ^6.9.0
+  image_picker: ^1.2.3
 
 dev_dependencies:
   flutter_test:
