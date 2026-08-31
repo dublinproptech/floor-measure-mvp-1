@@ -56,11 +56,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('Dublin PropTech',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800,
-                          color: AppColors.ink)),
-                  const SizedBox(height: 4),
+                  const Image(
+                    image: AssetImage('assets/images/logo.png'),
+                    height: 100,
+                  ),
+                  const SizedBox(height: 8),
                   const Text('Floor Survey',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: AppColors.muted)),
