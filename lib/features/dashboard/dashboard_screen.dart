@@ -121,26 +121,27 @@ class _MetricCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text('$value', style: Theme.of(context).textTheme.headlineSmall),
-            ),
-            const SizedBox(height: 4),
-            Flexible(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$value', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 4),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 90),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 2,
+                  softWrap: true,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
