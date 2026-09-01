@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/auth.dart';
+import '../admin/application/admin_providers.dart' show userRepositoryProvider;
 
 
 class AuthFailure implements Exception {
@@ -22,10 +23,18 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       try {
-        await ref.read(firebaseAuthProvider).signInWithEmailAndPassword(
+        final cred = await ref.read(firebaseAuthProvider).signInWithEmailAndPassword(
           email: email.trim(),
           password: password,
         );
+        final user = cred.user;
+        if (user != null) {
+          await ref.read(userRepositoryProvider).ensureUserDoc(
+            uid: user.uid,
+            email: user.email ?? email.trim(),
+            name: user.displayName ?? '',
+          );
+        }
       } on FirebaseAuthException catch (e) {
         throw AuthFailure(_messageFromCode(e.code));
       }
