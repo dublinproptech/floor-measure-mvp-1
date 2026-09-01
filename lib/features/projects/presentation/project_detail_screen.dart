@@ -164,8 +164,12 @@ class ProjectDetailScreen extends ConsumerWidget {
       ),
     );
     if (ok == true) {
+      final messenger = ScaffoldMessenger.of(context);
       await ref.read(projectControllerProvider.notifier).delete(projectId);
-      if (context.mounted) context.pop();
+      if (context.mounted) {
+        context.pop();
+        messenger.showSnackBar(const SnackBar(content: Text('Project deleted')));
+      }
     }
   }
 }

@@ -17,7 +17,13 @@ class DashboardScreen extends ConsumerWidget {
     final user = ref.watch(authStateProvider).asData?.value;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 32),
+            const SizedBox(width: 10),
+            const Text('Dashboard'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -85,7 +91,7 @@ class _MetricsGrid extends ConsumerWidget {
         physics: const NeverScrollableScrollPhysics(),
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.3,
+        childAspectRatio: 0.95,
         children: [
           _MetricCard(label: 'Total projects', value: c.total),
           _MetricCard(label: 'Active', value: c.active),
@@ -114,20 +120,28 @@ class _MetricCard extends StatelessWidget {
         side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$value', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$value', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 4),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 90),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 2,
+                  softWrap: true,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
