@@ -10,10 +10,11 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Dublin PropTech',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800,
-                    color: AppColors.ink)),
-            SizedBox(height: 16),
+            Image(
+              image: AssetImage('assets/images/logo.png'),
+              width: 220,
+            ),
+            SizedBox(height: 24),
             CircularProgressIndicator(color: AppColors.gold),
           ],
         ),

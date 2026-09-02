@@ -70,7 +70,11 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
     }
     if (!mounted) return;
     if (done) {
+      final messenger = ScaffoldMessenger.of(context);
       context.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text(_isEdit ? 'Project updated' : 'Project created')),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Save failed. Please try again.')));

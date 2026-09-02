@@ -3,25 +3,67 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../auth/auth_controller.dart';
-import '../../core/auth.dart';
 import '../projects/data/project_model.dart';
 import '../projects/application/project_controllers.dart';
 import '../admin/application/admin_providers.dart' show usersProvider;
 import 'application/dashboard_providers.dart';
+
+import '../auth/current_user_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider).asData?.value;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _confirmSignOut(context, ref),
+          Consumer(
+            builder: (context, ref, _) {
+              final isAdmin = ref.watch(isAdminProvider);
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) => _onMenuSelected(context, ref, value),
+                itemBuilder: (context) => [
+                  if (isAdmin) ...[
+                    const PopupMenuItem(
+                      value: 'admin_flooring',
+                      child: ListTile(
+                        leading: Icon(Icons.grid_view),
+                        title: Text('Flooring types'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'admin_users',
+                      child: ListTile(
+                        leading: Icon(Icons.people_outline),
+                        title: Text('Manage users'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'admin_settings',
+                      child: ListTile(
+                        leading: Icon(Icons.settings_outlined),
+                        title: Text('Company settings'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                  ],
+                  const PopupMenuItem(
+                    value: 'signout',
+                    child: ListTile(
+                      leading: Icon(Icons.logout),
+                      title: Text('Sign out'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -41,6 +83,23 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _onMenuSelected(BuildContext context, WidgetRef ref, String value) {
+    switch (value) {
+      case 'admin_flooring':
+        context.push('/admin/flooring');
+        break;
+      case 'admin_users':
+        context.push('/admin/users');
+        break;
+      case 'admin_settings':
+        context.push('/admin/settings');
+        break;
+      case 'signout':
+        _confirmSignOut(context, ref);
+        break;
+    }
   }
 
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
@@ -85,7 +144,7 @@ class _MetricsGrid extends ConsumerWidget {
         physics: const NeverScrollableScrollPhysics(),
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.3,
+        childAspectRatio: 0.95,
         children: [
           _MetricCard(label: 'Total projects', value: c.total),
           _MetricCard(label: 'Active', value: c.active),
@@ -114,20 +173,28 @@ class _MetricCard extends StatelessWidget {
         side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$value', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$value', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 4),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 90),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 2,
+                  softWrap: true,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -169,7 +236,7 @@ class _SearchAndFilterBar extends ConsumerWidget {
                 items: [
                   const DropdownMenuItem(value: null, child: Text('All statuses')),
                   ...ProjectStatus.values.map(
-                    (s) => DropdownMenuItem(value: s, child: Text(s.label)),
+                        (s) => DropdownMenuItem(value: s, child: Text(s.label)),
                   ),
                 ],
                 onChanged: notifier.setStatus,
@@ -254,22 +321,22 @@ class _ProjectResultsList extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             ...display.map((p) => Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Theme.of(context).dividerColor),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    title: Text(p.name),
-                    subtitle: Text('${p.client} • ${p.status.label}'),
-                    trailing: Text(
-                      '${p.surveyDate.day}/${p.surveyDate.month}/${p.surveyDate.year}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    onTap: () => context.push('/projects/${p.id}'),
-                  ),
-                )),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Theme.of(context).dividerColor),
+              ),
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                title: Text(p.name),
+                subtitle: Text('${p.client} • ${p.status.label}'),
+                trailing: Text(
+                  '${p.surveyDate.day}/${p.surveyDate.month}/${p.surveyDate.year}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                onTap: () => context.push('/projects/${p.id}'),
+              ),
+            )),
             if (!filters.isActive)
               TextButton(
                 onPressed: () => context.push('/projects'),
