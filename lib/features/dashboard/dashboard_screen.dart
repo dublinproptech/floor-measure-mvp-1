@@ -88,19 +88,20 @@ class DashboardScreen extends ConsumerWidget {
   void _onMenuSelected(BuildContext context, WidgetRef ref, String value) {
     switch (value) {
       case 'admin_flooring':
-        context.push('/admin/flooring');
+        context.push('/admin?tab=0');
         break;
       case 'admin_users':
-        context.push('/admin/users');
+        context.push('/admin?tab=2');
         break;
       case 'admin_settings':
-        context.push('/admin/settings');
+        context.push('/admin?tab=1');
         break;
       case 'signout':
         _confirmSignOut(context, ref);
         break;
     }
   }
+}
 
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
@@ -122,7 +123,6 @@ class DashboardScreen extends ConsumerWidget {
       await ref.read(authControllerProvider.notifier).signOut();
     }
   }
-}
 
 // ---------------------------------------------------------------------------
 // Metric cards

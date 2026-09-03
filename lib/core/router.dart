@@ -38,7 +38,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
-      GoRoute(path: '/admin', builder: (_, _) => const AdminScreen()), //del
+      GoRoute(
+        path: '/admin',
+        builder: (context, state) {
+          final tab = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+          return AdminScreen(initialTab: tab);
+        },
+      ),
       GoRoute(path: '/projects', builder: (_, _) => const ProjectListScreen()),
       GoRoute(path: '/projects/new', builder: (_, _) => const ProjectFormScreen()),
       GoRoute(

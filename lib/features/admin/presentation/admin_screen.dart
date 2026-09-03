@@ -8,31 +8,58 @@ import '../application/admin_providers.dart';
 import 'widgets/flooring_type_form_sheet.dart';
 
 /// Route: /admin — gate this behind UserRole.admin in your router's redirect.
-class AdminScreen extends StatelessWidget {
-  const AdminScreen({super.key});
+///
+/// [initialTab] controls which tab opens first:
+///   0 = Flooring Types, 1 = Settings, 2 = Users. Defaults to 0.
+class AdminScreen extends StatefulWidget {
+  const AdminScreen({super.key, this.initialTab = 0});
+
+  final int initialTab;
+
+  @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab.clamp(0, 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Admin'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Flooring Types'),
-              Tab(text: 'Settings'),
-              Tab(text: 'Users'),
-            ],
-          ),
-        ),
-        body: const TabBarView(
-          children: [
-            _FlooringTypesTab(),
-            _SettingsTab(),
-            _UsersTab(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Admin'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Flooring Types'),
+            Tab(text: 'Settings'),
+            Tab(text: 'Users'),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          _FlooringTypesTab(),
+          _SettingsTab(),
+          _UsersTab(),
+        ],
       ),
     );
   }
