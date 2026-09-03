@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Deny everything by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: is the request from a logged-in user?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: is the logged-in user an Admin?
+    // Reads the user's own doc under /users/{uid} and checks its role field.
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // USERS — a user can read their own doc; only Admins can list/edit/change roles.
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // FLOORING TYPES — any signed-in user can read (needed for Rooms dropdown);
+    // only Admins can add/edit/delete the product catalog.
+    match /flooringTypes/{typeId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // SETTINGS — company details + defaults. Any signed-in user can read
+    // (needed for defaults like wastage %); only Admins can write.
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // SNAGS — collection-group rule. Required separately from the nested
+    // rule below because the Dashboard runs a collectionGroup('snags')
+    // query across every project at once (for the snag counts), and
+    // Firestore only allows that if there's a top-level rule matching
+    // every 'snags' subcollection, regardless of which project it's under.
+    match /{path=**}/snags/{snagId} {
+      allow read: if isSignedIn();
+    }
+
+    // PROJECTS — any signed-in user can read/write for now (surveyors, PMs,
+    // staff all need access). Tighten further later if you need
+    // per-surveyor restrictions.
+    match /projects/{projectId} {
+      allow read, write: if isSignedIn();
+
+      // ROOMS — subcollection under each project.
+      match /rooms/{roomId} {
+        allow read, write: if isSignedIn();
+      }
+
+      // SNAGS — subcollection under each project.
+      match /snags/{snagId} {
+        allow read, write: if isSignedIn();
+      }
+
+      // ATTACHMENTS — subcollection under each project (photos/docs).
+      match /attachments/{attachmentId} {
+        allow read, write: if isSignedIn();
+      }
+
+      // REPORTS — subcollection under each project (generated PDFs).
+      match /reports/{reportId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+  }
+}
