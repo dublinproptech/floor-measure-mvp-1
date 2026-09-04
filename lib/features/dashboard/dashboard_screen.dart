@@ -101,7 +101,6 @@ class DashboardScreen extends ConsumerWidget {
         break;
     }
   }
-}
 
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
@@ -123,6 +122,7 @@ class DashboardScreen extends ConsumerWidget {
       await ref.read(authControllerProvider.notifier).signOut();
     }
   }
+}
 
 // ---------------------------------------------------------------------------
 // Metric cards
@@ -138,13 +138,15 @@ class _MetricsGrid extends ConsumerWidget {
     return countsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Text('Could not load dashboard: $e'),
-      data: (c) => GridView.count(
-        crossAxisCount: 3,
+      data: (c) => GridView(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.95,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          mainAxisExtent: 140, // Increased height to give the text breathing room
+        ),
         children: [
           _MetricCard(label: 'Total projects', value: c.total),
           _MetricCard(label: 'Active', value: c.active),
@@ -173,28 +175,23 @@ class _MetricCard extends StatelessWidget {
         side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('$value', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 4),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 90),
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  maxLines: 2,
-                  softWrap: true,
-                ),
+        padding: const EdgeInsets.all(10), // Simplified padding
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('$value', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 4),
+            // Expanded forces the text to stay within the card bounds without overflowing
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

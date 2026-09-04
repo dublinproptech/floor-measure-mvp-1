@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
 
 enum AttachmentType { roomPhoto, snagPhotoBefore, snagPhotoAfter, siteDoc }
 
